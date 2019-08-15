@@ -7,32 +7,47 @@ import java.io.IOException;
 
 public class CompositeKey implements WritableComparable<CompositeKey> {
 
-    long hotelId;
-    String srchCi;
+    private long hotelId;
+    private String srchCi;
+    private long bookingId;
 
-    public long getHotelId() {
+    long getBookingId() {
+        return bookingId;
+    }
+
+    void setBookingId(long bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    long getHotelId() {
         return hotelId;
     }
 
-    public void setHotelId(long hotelId) {
+    void setHotelId(long hotelId) {
         this.hotelId = hotelId;
     }
 
-    public String getSrchCi() {
+    String getSrchCi() {
         return srchCi;
     }
 
-    public void setSrchCi(String srchCi) {
+    void setSrchCi(String srchCi) {
         this.srchCi = srchCi;
     }
 
-    public CompositeKey() {
+    CompositeKey() {
     }
 
     public int compareTo(CompositeKey o) {
         int result = hotelId > o.getHotelId() ? 1 : -1;
         if (hotelId == o.getHotelId()){
             result = srchCi.compareTo(o.getSrchCi());
+            if(result == 0){
+                result = bookingId > o.getBookingId() ? 1 : -1;
+                if (bookingId == o.getBookingId()){
+                    result = 0;
+                }
+            }
         }
         return result;
     }
@@ -40,10 +55,12 @@ public class CompositeKey implements WritableComparable<CompositeKey> {
     public void write(DataOutput dataOutput) throws IOException {
         WritableUtils.writeVLong(dataOutput, hotelId);
         WritableUtils.writeString(dataOutput, srchCi);
+        WritableUtils.writeVLong(dataOutput, bookingId);
     }
 
     public void readFields(DataInput dataInput) throws IOException {
         hotelId = WritableUtils.readVLong(dataInput);
         srchCi = WritableUtils.readString(dataInput);
+        bookingId = WritableUtils.readVLong(dataInput);
     }
 }

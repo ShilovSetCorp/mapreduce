@@ -5,6 +5,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.stubbing.OngoingStubbing;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,13 +28,18 @@ public class ReducerTests {
     }
 
     @Test
-    public void testAvroMap() throws IOException, InterruptedException {
-        List<Text> iterables = new ArrayList<>();
-        iterables.add(new Text());
-        iterables.add(new Text());
-        iterables.add(new Text());
-        reducer.reduce(new CompositeKey(), iterables, context);
-        verify(counter, times(1)).increment(1);
+    public void testAvroReduce() throws IOException, InterruptedException {
+        List<CompositeValue> iterables = new ArrayList<>();
+
+        iterables.add(new CompositeValue(1,4));
+        iterables.add(new CompositeValue(1,6));
+        iterables.add(new CompositeValue(1,2));
+        CompositeKey key = new CompositeKey();
+        key.setHotelId(123);
+        key.setSrchCi("123_234_234");
+        Text keyT = new Text("Hotel ID: " + key.getHotelId() + ", Srch_ci: " + key.getSrchCi() + "Booking id: " + key.getBookingId());
+        reducer.reduce(key, iterables, context);
+        verify(context, times(1)).write(keyT, new Text(iterables.get(iterables.size()-1).getChannel().toString()));
     }
 
     @After
