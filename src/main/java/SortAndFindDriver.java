@@ -50,7 +50,7 @@ public class SortAndFindDriver extends Configured implements Tool {
 
     }
 
-    private static class Map extends Mapper<AvroKey<GenericData.Record>, NullWritable, CompositeKey, Text>{
+    public static class Map extends Mapper<AvroKey<GenericData.Record>, NullWritable, CompositeKey, Text>{
         @Override
         protected void map(AvroKey<GenericData.Record> key, NullWritable  value, Context context) throws IOException, InterruptedException {
             System.out.println("In the mapper");
@@ -70,7 +70,7 @@ public class SortAndFindDriver extends Configured implements Tool {
         }
     }
 
-    private static class Reduce extends Reducer<CompositeKey, Text, Text, Text> {
+    public static class Reduce extends Reducer<CompositeKey, Text, Text, Text> {
 
         @Override
         protected void reduce(CompositeKey key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
