@@ -1,14 +1,11 @@
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.mapred.AvroKey;
 import org.apache.hadoop.mapreduce.Counter;
-import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper.Context;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-
 
 import static org.mockito.Mockito.*;
 

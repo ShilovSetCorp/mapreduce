@@ -1,10 +1,13 @@
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableUtils;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/*
+ * CompositeKey class added to the project to make secondary sort by
+ * srch_ci and booking ID fields not only by hotelId field
+ */
 public class CompositeKey implements WritableComparable<CompositeKey> {
 
     private long hotelId;

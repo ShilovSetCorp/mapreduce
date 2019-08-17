@@ -1,12 +1,17 @@
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 
+
+/*
+ * CompositeKeyComparator extends WritableComparator. It provides an opportunity
+ * make compare in proper manner: first compare hortelId fields, and after that compare
+ * srch_ci and bookingId fields
+ */
 public class CompositeKeyComparator extends WritableComparator {
 
     protected CompositeKeyComparator() {
         super(CompositeKey.class, true);
     }
-
 
     @Override
     public int compare(WritableComparable w1, WritableComparable w2) {

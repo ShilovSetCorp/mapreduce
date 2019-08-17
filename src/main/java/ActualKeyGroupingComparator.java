@@ -1,11 +1,14 @@
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 
+/*
+ * ActualKeyGroupingComparator extends WritableComparator
+ * It helps to make sure that grouping will be only by hotel_id, not whole CompositeKey
+ */
 public class ActualKeyGroupingComparator extends WritableComparator {
     protected ActualKeyGroupingComparator() {
         super(CompositeKey.class, true);
     }
-
 
     @Override
     public int compare(WritableComparable w1, WritableComparable w2) {

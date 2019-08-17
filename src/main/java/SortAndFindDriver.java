@@ -16,8 +16,6 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -26,7 +24,7 @@ public class SortAndFindDriver extends Configured implements Tool {
 
     public int run(String[] strings) throws Exception {
         if (strings.length != 2) {
-            System.out.printf("Two parameters are required for SecondarySortBasicDriver- <input dir> <output dir>\n");
+            System.out.println("Two parameters are required for SecondarySortBasicDriver- <input dir> <output dir>\n");
             return -1;
         }
 
@@ -37,7 +35,7 @@ public class SortAndFindDriver extends Configured implements Tool {
         job.setReducerClass(Reduce.class);
         job.setNumReduceTasks(1);
 
-        // Specify key / value
+        // Specify key / value / partition
         job.setMapOutputKeyClass(CompositeKey.class);
         job.setMapOutputValueClass(CompositeValue.class);
         job.setOutputKeyClass(CompositeKey.class);
@@ -46,6 +44,7 @@ public class SortAndFindDriver extends Configured implements Tool {
         job.setGroupingComparatorClass(ActualKeyGroupingComparator.class);
         job.setSortComparatorClass(CompositeKeyComparator.class);
 
+        // Specify input format
         AvroKeyInputFormat.addInputPath(job, new Path(strings[0]));
         job.setInputFormatClass(AvroKeyInputFormat.class);
         FileOutputFormat.setOutputPath(job, new Path(strings[1]));
@@ -58,6 +57,10 @@ public class SortAndFindDriver extends Configured implements Tool {
     public static class Map extends Mapper<AvroKey<GenericData.Record>, NullWritable, CompositeKey, CompositeValue>{
         @Override
         protected void map(AvroKey<GenericData.Record> key, NullWritable  value, Context context) throws IOException, InterruptedException {
+            /*Map booking id, hotel id and srch_ci fields yo CompositeKey from avro file,
+            * that all lines from dataset could be sorted by hotel id
+            * and that sorted by srch_ci anf booking id
+            */
             long bookingId = (long) key.datum().get("id");
             long hotelId = (long) key.datum().get("hotel_id");
             String srchCi = (String) key.datum().get("srch_ci");
@@ -65,6 +68,7 @@ public class SortAndFindDriver extends Configured implements Tool {
             ck.setHotelId(hotelId);
             ck.setSrchCi(srchCi);
             ck.setBookingId(bookingId);
+            //Map adults and channel fields to CompositeValue
             int channel = (int) key.datum().get("channel");
             int adults = (int) key.datum().get("srch_adults_cnt");
             CompositeValue cv = new CompositeValue(channel, adults);
@@ -73,6 +77,10 @@ public class SortAndFindDriver extends Configured implements Tool {
     }
 
     public static class Reduce extends Reducer<CompositeKey, CompositeValue, Text, Text> {
+        /*
+         * Collect lines only with number of adults 2+ and only the latest booking.
+         * Add to output file hotel id, Srch_ci, booking id and channel
+         */
         @Override
         protected void reduce(CompositeKey key, Iterable<CompositeValue> values, Context context) throws IOException, InterruptedException {
             Text text = new Text("Hotel ID: " + key.getHotelId() + ", Srch_ci: " + key.getSrchCi() + "Booking id: " + key.getBookingId());

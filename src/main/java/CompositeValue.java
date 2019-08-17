@@ -6,6 +6,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/*
+ * CompositeValue extends ObjectWritable.
+ * It stores data that need to be passed from mapper to reducer
+ */
 public class CompositeValue extends ObjectWritable implements WritableComparable<CompositeValue> {
     private Integer channel;
     private Integer adults;
