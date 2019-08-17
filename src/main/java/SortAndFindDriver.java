@@ -6,6 +6,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 
+import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
@@ -15,6 +16,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,15 +58,15 @@ public class SortAndFindDriver extends Configured implements Tool {
     public static class Map extends Mapper<AvroKey<GenericData.Record>, NullWritable, CompositeKey, CompositeValue>{
         @Override
         protected void map(AvroKey<GenericData.Record> key, NullWritable  value, Context context) throws IOException, InterruptedException {
-            long hotelId = (Long) key.datum().get("hotel_id");
-            CharSequence srchCi = (CharSequence) key.datum().get("srch_ci");
-            long bookingId = (Long) key.datum().get("id");
+            long bookingId = (long) key.datum().get("id");
+            long hotelId = (long) key.datum().get("hotel_id");
+            String srchCi = (String) key.datum().get("srch_ci");
             CompositeKey ck = new CompositeKey();
             ck.setHotelId(hotelId);
-            ck.setSrchCi(srchCi.toString());
+            ck.setSrchCi(srchCi);
             ck.setBookingId(bookingId);
-            Integer channel = (Integer) key.datum().get("channel");
-            Integer adults = (Integer) key.datum().get("srch_adults_cnt");
+            int channel = (int) key.datum().get("channel");
+            int adults = (int) key.datum().get("srch_adults_cnt");
             CompositeValue cv = new CompositeValue(channel, adults);
             context.write(ck, cv);
         }

@@ -17,20 +17,16 @@ import static org.mockito.Mockito.*;
 public class ReducerTests {
     private SortAndFindDriver.Reduce reducer;
     private Reducer.Context context;
-    private Counter counter;
 
     @Before
     public void init(){
         reducer = new SortAndFindDriver.Reduce();
         context = mock(Reducer.Context.class);
-        counter = mock(Counter.class);
-        doNothing().when(counter).increment(anyLong());
     }
 
     @Test
     public void testAvroReduce() throws IOException, InterruptedException {
         List<CompositeValue> iterables = new ArrayList<>();
-
         iterables.add(new CompositeValue(1,4));
         iterables.add(new CompositeValue(1,6));
         iterables.add(new CompositeValue(1,2));
@@ -42,8 +38,4 @@ public class ReducerTests {
         verify(context, times(1)).write(keyT, new Text(iterables.get(iterables.size()-1).getChannel().toString()));
     }
 
-    @After
-    public void tearDown() {
-        verifyNoMoreInteractions(context);
-    }
 }

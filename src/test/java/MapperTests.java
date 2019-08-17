@@ -1,17 +1,14 @@
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.mapred.AvroKey;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Counter;
-import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InOrder;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import static org.mockito.Mockito.*;
 
@@ -20,27 +17,30 @@ public class MapperTests {
     private Context context;
     private Counter counter;
     private AvroKey avroKeyMock;
-    private Object datumMock;
+    private GenericData.Record gdr;
     @Before
     public void init(){
         mapper = new SortAndFindDriver.Map();
         context = mock(Context.class);
-        counter = mock(Counter.class);
         avroKeyMock = mock(AvroKey.class);
-
-        doNothing().when(counter).increment(anyLong());
+        gdr = mock(GenericData.Record.class);
     }
 
     @Test
     public void testAvroMap() throws IOException, InterruptedException {
+        when(gdr.get("hotel_id")).thenReturn(100L);
+        when(gdr.get("id")).thenReturn(10L);
+        when(gdr.get("srch_ci")).thenReturn("mock");
+        when(gdr.get("channel")).thenReturn(3);
+        when(gdr.get("srch_adults_cnt")).thenReturn(4);
+        when(avroKeyMock.datum()).thenReturn(gdr);
 
         mapper.map(avroKeyMock, null, context);
-
-        verify(counter, times(1)).increment(1);
+        verify(gdr, times(1)).get("id");
+        verify(gdr, times(1)).get("srch_ci");
+        verify(gdr, times(1)).get("hotel_id");
+        verify(gdr, times(1)).get("channel");
+        verify(gdr, times(1)).get("srch_adults_cnt");
     }
 
-    @After
-    public void tearDown() {
-        verifyNoMoreInteractions(context);
-    }
 }
