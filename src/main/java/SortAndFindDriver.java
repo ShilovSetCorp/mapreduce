@@ -6,7 +6,6 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 
-import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
@@ -54,13 +53,13 @@ public class SortAndFindDriver extends Configured implements Tool {
 
     }
 
-    public static class Map extends Mapper<AvroKey<GenericData.Record>, NullWritable, CompositeKey, CompositeValue>{
+    public static class Map extends Mapper<AvroKey<GenericData.Record>, NullWritable, CompositeKey, CompositeValue> {
         @Override
-        protected void map(AvroKey<GenericData.Record> key, NullWritable  value, Context context) throws IOException, InterruptedException {
+        protected void map(AvroKey<GenericData.Record> key, NullWritable value, Context context) throws IOException, InterruptedException {
             /*Map booking id, hotel id and srch_ci fields yo CompositeKey from avro file,
-            * that all lines from dataset could be sorted by hotel id
-            * and that sorted by srch_ci anf booking id
-            */
+             * that all lines from dataset could be sorted by hotel id
+             * and that sorted by srch_ci anf booking id
+             */
             long bookingId = (long) key.datum().get("id");
             long hotelId = (long) key.datum().get("hotel_id");
             String srchCi = (String) key.datum().get("srch_ci");
@@ -87,7 +86,7 @@ public class SortAndFindDriver extends Configured implements Tool {
             List<CompositeValue> cvWithCompanies = StreamSupport.stream(values.spliterator(), false)
                     .filter(compositeValue -> compositeValue.getAdults() >= 2)
                     .collect(Collectors.toList());
-            context.write(text, new Text("" + cvWithCompanies.get(cvWithCompanies.size()-1).getChannel()));
+            context.write(text, new Text("" + cvWithCompanies.get(cvWithCompanies.size() - 1).getChannel()));
         }
     }
 

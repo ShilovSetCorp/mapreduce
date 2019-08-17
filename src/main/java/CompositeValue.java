@@ -17,7 +17,7 @@ public class CompositeValue extends ObjectWritable implements WritableComparable
     public CompositeValue() {
     }
 
-    CompositeValue(Integer channel, Integer adults)  {
+    CompositeValue(Integer channel, Integer adults) {
         this.channel = channel;
         this.adults = adults;
     }

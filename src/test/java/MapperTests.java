@@ -15,8 +15,9 @@ public class MapperTests {
     private Counter counter;
     private AvroKey avroKeyMock;
     private GenericData.Record gdr;
+
     @Before
-    public void init(){
+    public void init() {
         mapper = new SortAndFindDriver.Map();
         context = mock(Context.class);
         avroKeyMock = mock(AvroKey.class);

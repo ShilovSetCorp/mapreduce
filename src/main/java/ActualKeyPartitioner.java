@@ -10,6 +10,7 @@ public class ActualKeyPartitioner extends Partitioner<CompositeKey, Text> {
 
     private HashPartitioner<Text, Text> hashPartitioner = new HashPartitioner<>();
     private Text newKey = new Text();
+
     public int getPartition(CompositeKey compositeKey, Text text, int i) {
         newKey.set(String.valueOf(compositeKey.getHotelId()));
         return hashPartitioner.getPartition(newKey, text, i);
